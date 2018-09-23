@@ -2,10 +2,9 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <script src="html5slider.js"></script>
         <link href='http://fonts.googleapis.com/css?family=Quattrocento' rel='stylesheet' type='text/css'>
 
-        <title>Electric field lines</title>
+        <title>Le linee del campo elettrostatico</title>
     </head>
     <body>
     <div id="container">
@@ -13,18 +12,19 @@
         Your browser does not support the HTML5 canvas tag.
         </canvas>
     </div>
-    <div id="copyleft">
-        <p>Copyleft <img src="copyleft.png" width=10 height=10 /> <a href="http://dragly.org">Svenn-Arne Dragly</a> - Licensed under a <a href="http://www.gnu.org/licenses/agpl.html">GNU AGPL license</a> -
-        <a href="http://github.com/dragly/html-field-lines">Source code</a></p>
+    <div id="license">
+        <p>Licensed under the <a href="http://www.gnu.org/licenses/agpl.html">GNU AGPL license</a> -
+        <a href="http://github.com/lorenzo-rovigatti/html-field-lines">Source code</a> (adapted from <a href="http://github.com/dragly/html-field-lines">here</a>)
+        <p>
     </div>
     <div id="controllers">
-        <h2>Controllers</h2>
+        <h2>Controlli</h2>
         <p>
-        Number of field lines:<br/>
+        Numero di linee di campo:<br/>
         <input id="nFieldLines" type="range" min="0" max="100" onchange="controllersChanged(event)" value=40>
         </p>
         <p>
-        Initial charge for new particles:<br/>
+      	Valore delle nuove cariche:<br/>
         <input id="initialCharge" type="range" min="0" max="100" onchange="controllersChanged(event)" value=20>
         </p>
         <p>
@@ -38,29 +38,10 @@
         </p>
     </div>
     <div id="title">
-        <h1>Electric<br/>field lines</h1>
-        <a href="#">Info</a>
+        <h1>Le linee del campo elettrostatico</h1>
     </div>
 
-    <div id="info">
-        <p>Below is a canvas where you may place out particles with different charge and study the electric field lines between them.</p>
-        <p>Click to create new charges and use the controllers to change the settings.</p>
-        <p>This simulation is fastest in <a href="http://chrome.com">Google Chrome</a>, although it runs decent in <a href="http://firefox.com">Mozilla Firefox 15</a> too.</p>
-
-
-        <p>Limitations: </p>
-        <p>
-            <ul>
-                <li>The field lines start at both positive and negative charges,
-                causing the field line density to be a bit off because some lines end up too close to eachother.</li>
-                <li>The integrator that calculates the field lines is terrible and will cause the lines to look very ugly at times.
-                Please ignore this and try to adjust the settings until everything looks OK.</li>
-                <li>All calculations are approximate and may diverge greatly from what you'd expect.</li>
-            </ul>
-        </p>
-    </div>
-    <script type="text/javascript" src="jquery-1.8.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="htmlfieldlines.js"></script>
-
     </body>
 </html>

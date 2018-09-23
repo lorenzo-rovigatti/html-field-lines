@@ -35,7 +35,7 @@ function controllersChanged(event) {
     nSteps = minNSteps + document.getElementById('nSteps').value / 100 * (maxNSteps - minNSteps);
     nFieldLines = minNFieldLines + document.getElementById('nFieldLines').value / 100 * (maxNFieldLines - minNFieldLines);
     initialCharge = minInitialCharge + document.getElementById('initialCharge').value / 100 * (maxInitialCharge - minInitialCharge);
-    //drawFieldLines();
+    // drawFieldLines();
     redraw();
 }
 
@@ -61,12 +61,12 @@ function E(position) {
     return [Ex, Ey];
 }
 
-var canvas=document.getElementById("myCanvas");
-var ctx=canvas.getContext("2d");
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
 
     
-//var centerx = 200;
-//var centery = 200;
+// var centerx = 200;
+// var centery = 200;
 var drawing = false;
 
 function redraw() {
@@ -107,9 +107,9 @@ function drawFieldLines() {
         ctx.arc(xa, ya, radius, 0, Math.PI*2, true); 
         ctx.closePath();
         ctx.fill();
-        //ctx.fillRect(xa - 5, ya - 5, 10, 10);
+        // ctx.fillRect(xa - 5, ya - 5, 10, 10);
         if(particles[j].charge < 0) {
-            //continue;
+            // continue;
         }
 
         var sign = particles[j].charge > 0 ? 1 : -1;
@@ -134,7 +134,7 @@ function drawFieldLines() {
                 
                 ctx.lineTo(x,y);
             }
-            //ctx.closePath();
+            // ctx.closePath();
             ctx.lineWidth = 1;
             ctx.strokeStyle="#000000";
             ctx.stroke();
@@ -184,7 +184,6 @@ function onResize() {
 }
 
 function onMouseDown(e) {    
-    
     coords = canvas.relMouseCoords(e);
     dragStartX = coords.x;
     dragStartY = coords.y;
@@ -210,7 +209,7 @@ function onMouseMove(e) {
         if(dragging) {
             particles[draggingParticle].position[0] = dragX;
             particles[draggingParticle].position[1] = dragY;
-            //drawFieldLines();
+            // drawFieldLines();
             redraw();
         }
     }
@@ -235,7 +234,7 @@ function onMouseUp(e) {
             position: [dragX,dragY],
             charge: theCharge
         }
-        //drawFieldLines();
+        // drawFieldLines();
         redraw();
     }
     return false;
@@ -254,14 +253,14 @@ window.requestAnimFrame = (function(){
 })();
 
 
-// usage: 
+// usage:
 // instead of setInterval(render, 16) ....
 
 (function animloop(){
   requestAnimFrame(animloop);
   drawFieldLines();
 })();
-// place the rAF *before* the render() to assure as close to 
+// place the rAF *before* the render() to assure as close to
 // 60fps with the setTimeout fallback.
 
 initialize();
@@ -270,19 +269,6 @@ canvas.addEventListener('mousemove', onMouseMove, false);
 canvas.addEventListener('mouseup', onMouseUp, false);
 window.addEventListener('resize', onResize, false);
 canvas.onselectstart = function () { return false; } // ie
-
-// JQuery stuff
-$('#title').mouseenter(function() {
-    $('#info').fadeIn('slow', function() {
-    // Animation complete
-    });
-});
-$('#title').mouseleave(function() {
-    $('#info').fadeOut('slow', function() {
-    // Animation complete
-    });
-});
-// Done JQuery
 
 console.log("Done!");
 
