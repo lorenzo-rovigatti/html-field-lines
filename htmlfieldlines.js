@@ -1,41 +1,35 @@
  
 
 // CONSTANTS
-var minStepLength = 0.005;
-var maxStepLength = 0.05;
+var minStepLength = 0.05;
+var maxStepLength = 0.5;
 
 var minNSteps = 1;
 var maxNSteps = 10000;
 
 var minNFieldLines = 6;
 var maxNFieldLines = 20;
-
-var minInitialCharge = -2;
-var maxInitialCharge = 2;
 // END CONSTANTS
 
 var needsRedraw = false;
 var particles = [];
-var stepLength = 0.02;
-var nSteps = 10;
+var stepLength = 0.5;
+var nSteps = 10000;
 var nFieldLines = 12;
 var initialCharge = 1.0;
+var addingCharge = false;
 
 function initialize() {
     particles[0] = {
         position: [window.innerWidth/2, window.innerHeight/2],
-        charge: 0.8 * maxInitialCharge
+        charge: initialCharge
     }
     onResize();
     controllersChanged(0);
 }
 
 function controllersChanged(event) {
-    stepLength = minStepLength + document.getElementById('stepLength').value / 100 * (maxStepLength - minStepLength);
-    nSteps = minNSteps + document.getElementById('nSteps').value / 100 * (maxNSteps - minNSteps);
-    nFieldLines = minNFieldLines + document.getElementById('nFieldLines').value / 100 * (maxNFieldLines - minNFieldLines);
-    initialCharge = minInitialCharge + document.getElementById('initialCharge').value / 100 * (maxInitialCharge - minInitialCharge);
-    // drawFieldLines();
+    nFieldLines = document.getElementById('nFieldLines').value;
     redraw();
 }
 
@@ -78,6 +72,11 @@ function removeAll() {
     redraw();
 }
 
+function addCharge() {
+	addingCharge = true;
+	canvas.style.cursor = "crosshair";
+}
+
 function drawFieldLines() {
     if(!needsRedraw) {
         return;
@@ -93,32 +92,17 @@ function drawFieldLines() {
 
     var x = 0.0;
     var y = 0.0;
-    var radius = 5;
+    var radius = 15;
+    // we first draw the lines and then the charges, so that the latter are always on top of the former
     for(var j = 0; j < particles.length; j++) {
         var xa = particles[j].position[0];
         var ya = particles[j].position[1];
-        var opacity = Math.abs(particles[j].charge / minInitialCharge);
-        if(particles[j].charge > 0) {
-            ctx.fillStyle="rgba(255, 0, 0, " + opacity + ")";
-        } else {
-            ctx.fillStyle="rgba(0, 0, 255, " + opacity + ")";
-        }
-        ctx.beginPath();
-        ctx.arc(xa, ya, radius, 0, Math.PI*2, true); 
-        ctx.closePath();
-        ctx.fill();
-        // ctx.fillRect(xa - 5, ya - 5, 10, 10);
-        if(particles[j].charge < 0) {
-            // continue;
-        }
-
         var sign = particles[j].charge > 0 ? 1 : -1;
 
-        var nLines = nFieldLines * Math.abs(particles[j].charge / minInitialCharge);
-        var startAngle = j / particles.length * 2 * 3.14;
+        var nLines = nFieldLines * Math.abs(particles[j].charge);
         for(var a = 0; a < nLines; a++) {
-            x = xa + radius * Math.cos(startAngle + a / nLines * 2 * 3.14);
-            y = ya + radius * Math.sin(startAngle + a / nLines * 2 * 3.14);
+            x = xa + radius * Math.cos(a / nLines * 2 * 3.14);
+            y = ya + radius * Math.sin(a / nLines * 2 * 3.14);
             ctx.beginPath();
             ctx.moveTo(x,y);
             for(var i = 0; i < nSteps; i++) {
@@ -126,20 +110,45 @@ function drawFieldLines() {
                 var stepx = field[0];
                 var stepy = field[1];
                 
-                var scale = stepLength * stepLength / (stepLength / 10000000000. + stepx * stepx + stepy * stepy);
-
-
-                x = x + sign*scale*stepx;
-                y = y + sign*scale*stepy;
+                // use Euler's method
+                var E_mod = Math.sqrt(stepx * stepx + stepy * stepy);
+                x += sign * stepLength * stepx / E_mod;
+                y += sign * stepLength * stepy / E_mod;
                 
                 ctx.lineTo(x,y);
             }
-            // ctx.closePath();
             ctx.lineWidth = 1;
             ctx.strokeStyle="#000000";
             ctx.stroke();
         }
     }
+    
+    for(var j = 0; j < particles.length; j++) {
+        var xa = particles[j].position[0];
+        var ya = particles[j].position[1];
+        if(particles[j].charge > 0) {
+        	var sphere_color = "rgba(250, 150, 0, 1)";
+        	var text_color = "rgba(0, 0, 0, 1)";
+        	var text = "+" + particles[j].charge.toString();
+        	var x_shift = 15;
+        } 
+        else {
+        	var sphere_color = "rgba(0, 150, 250, 1)";
+        	var text_color = "rgba(0, 0, 0, 1)";
+        	var text = particles[j].charge.toString();
+        	var x_shift = 10;
+        }
+        ctx.fillStyle = sphere_color;
+        ctx.beginPath();
+        ctx.arc(xa, ya, radius, 0, Math.PI*2, true); 
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.font = "20px Georgia";
+        ctx.fillStyle = text_color;
+        ctx.fillText(text, xa - x_shift, ya + 8);
+    }
+    
     drawing = false;
     needsRedraw = false;
 }
@@ -221,22 +230,29 @@ function onMouseUp(e) {
     
     dragging = false;
     
-    var theCharge = initialCharge;
-    if(e.ctrlKey) {
-        theCharge = -initialCharge;
-    }
-    
     var diffX = dragStartX - dragX;
     var diffY = dragStartY - dragY;
     
-    if((diffX*diffX + diffY*diffY) < 100) {
-        particles[particles.length] = {
+    if(addingCharge) {
+    	addingCharge = false;
+    	canvas.style.cursor = "pointer";
+    	
+    	do {
+    	    var choice = window.prompt("Inserisci il valore della carica", "-1");
+    	    if(choice == null) {
+    	    	break;
+    	    }
+    	    var charge = parseInt(choice);
+    	}
+    	while(isNaN(charge) || charge == 0);
+    	
+    	particles[particles.length] = {
             position: [dragX,dragY],
-            charge: theCharge
+            charge: charge
         }
-        // drawFieldLines();
         redraw();
     }
+    
     return false;
 }
 
