@@ -8,7 +8,7 @@ var initialCharge = 1.0;
 var charge_radius = 15;
 var addingCharge = false;
 var removingCharge = false;
-var canvas = document.getElementById("myCanvas");
+var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var drawing = false;
 
